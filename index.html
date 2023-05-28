@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Aplikacja do zarządzania zadaniami</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Lista zadań</h1>
+  <ul id="task-list">
+
+  </ul>
+
+  <h2>Dodaj użytkownika</h2>
+  <form id="add-user-form" action="/users" method="POST">
+    <input type="text" name="name" placeholder="Imię" required>
+    <input type="text" name="last_name" placeholder="Nazwisko" required>
+    <button type="submit">Dodaj użytkownika</button>
+  </form>
+
+  <h2>Dodaj projekt</h2>
+  <form id="add-project-form" action="/projects" method="POST">
+    <input type="text" name="name" placeholder="Nazwa projektu" required>
+    <button type="submit">Dodaj projekt</button>
+  </form>
+
+  <h2>Dodaj zadanie</h2>
+  <form id="add-task-form" action="/tasks" method="POST">
+    <input type="text" name="name" placeholder="Nazwa zadania" required>
+    <input type="number" name="project_id" placeholder="ID projektu" required>
+    <input type="number" name="user_id" placeholder="ID użytkownika" required>
+    <button type="submit">Dodaj zadanie</button>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Pobranie listy zadań i projektów po załadowaniu strony
+      $.get("/projects", function(projects) {
+        projects.forEach(function(project) {
+          $("#task-list").append("<li><strong>Projekt:</strong> " + project.name + " (ID: " + project.id + ")</li>");
+
+          $.get("/tasks/" + project.id, function(tasks) {
+            if (tasks.length > 0) {
+              var tasksList = "<ul>";
+              tasks.forEach(function(task) {
+                tasksList += "<li>" + task.name + " (Użytkownik: " + task.user_name + ")</li>";
+              });
+              tasksList += "</ul>";
+              $("#task-list").append(tasksList);
+            }
+          });
+        });
+      });
+
+      // Obsługa dodawania użytkownika
+      $("#add-user-form").submit(function(event) {
+        event.preventDefault();
+        var form = $(this);
+        var url = form.attr("action");
+        var formData = form.serialize();
+        $.post(url, formData, function(response) {
+          alert("Dodano użytkownika!");
+          form.trigger("reset");
+        });
+      });
+
+      // Obsługa dodawania projektu
+      $("#add-project-form").submit(function(event) {
+        event.preventDefault();
+        var form = $(this);
+        var url = form.attr("action");
+        var formData = form.serialize();
+        $.post(url, formData, function(response) {
+          alert("Dodano projekt!");
+          form.trigger("reset");
+          location.reload(); // Przeładuj stronę po dodaniu projektu
+        });
+      });
+
+      // Obsługa dodawania zadania
+      $("#add-task-form").submit(function(event) {
+        event.preventDefault();
+        var form = $(this);
+        var url = form.attr("action");
+        var formData = form.serialize();
+        $.post(url, formData, function(response) {
+          alert("Dodano zadanie!");
+          form.trigger("reset");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

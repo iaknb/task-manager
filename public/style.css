@@ -1,0 +1,86 @@
+/* Resetowanie domyślnych stylów */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Podstawowe style strony */
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    padding: 20px;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  input, button {
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  ul {
+    list-style-type: none;
+    margin-bottom: 20px;
+  }
+  
+  li {
+    margin-bottom: 5px;
+  }
+  
+  /* Dodatkowe style */
+  #task-list {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  #task-list li {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  #add-user-form, #add-project-form, #add-task-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  #add-user-form input[type="text"],
+  #add-user-form input[type="email"],
+  #add-project-form input[type="text"],
+  #add-task-form input[type="text"],
+  #add-task-form input[type="number"] {
+    width: 200px;
+  }
+  
+  #add-user-form button,
+  #add-project-form button,
+  #add-task-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+  }
+  
+  #add-user-form button:hover,
+  #add-project-form button:hover,
+  #add-task-form button:hover {
+    background-color: #0069d9;
+  }
+  
+  
