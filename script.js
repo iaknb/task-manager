@@ -47,7 +47,7 @@ app.get('/tasks/:projectId', function(req, res) {
 });
 
 // Pobieranie wszystkich użytkowników
-app.get('/users', function(req, res) {
+app.get('/showusers', function(req, res) {
   const query = 'SELECT * FROM users';
 
   connection.query(query, function(err, result) {

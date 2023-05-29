@@ -42,8 +42,8 @@
         // Pobranie listy zadań i projektów po załadowaniu strony
         $.get("/projects", function (projects) {
           projects.forEach(function (project) {
-            var projectItem = $("<li><strong>Projekt:</strong> " + project.name + " (ID: " + project.id + ")</li>");
-            var tasksList = $("<ul></ul>");
+            let projectItem = $("<li><strong>Projekt:</strong> " + project.name + " (ID: " + project.id + ")</li>");
+            let tasksList = $("<ul></ul>");
 
             $.get("/tasks/" + project.id, function (tasks) {
               if (tasks.length > 0) {
@@ -59,13 +59,25 @@
             });
           });
         });
-        $.get("/users", function(users) {
-      users.forEach(function(user) {
-        var userItem = $("<li>" + user.name + " " + user.last_name + "</li>");
-        $("#user-list").append(userItem);
-      });
-    });
+        $.get("/users", function (users) {
+          users.forEach(function (user) {
+            let userItem = $("<li>" + user.name + " " + user.last_name + "</li>");
+            $("#user-list").append(userItem);
+          });
+        });
       })
+      $(document).ready(function () {
+        $.get("/showusers", function (showusers) {
+          let userhead = $("<h1>Użytkownicy wprowadzeni do bazy:</h1>")
+          let userlist = $("<ul></ul>")
+          showusers.forEach(function (showuser) {
+              userlist.append("<li>" + showuser.name + ", id:"+ showuser.id + "</li>")
+          })
+          $("#user-list").append(userlist)
+          
+        })
+      })
+
 
 
       // Obsługa dodawania użytkownika
@@ -77,6 +89,7 @@
         $.post(url, formData, function (response) {
           alert('Dodano użytkownika!');
           form.trigger('reset');
+          location.reload()
         });
       });
 
@@ -102,6 +115,7 @@
         $.post(url, formData, function (response) {
           alert('Dodano zadanie!');
           form.trigger('reset');
+          location.reload();
         });
       });
     });
