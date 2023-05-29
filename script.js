@@ -25,6 +25,10 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/admin', function(req, res) {
+  res.sendFile(__dirname + '/admin.html');
+});
+
 // Pobieranie wszystkich projektów
 app.get('/projects', function(req, res) {
   const query = 'SELECT * FROM projects';
@@ -91,6 +95,18 @@ app.post('/tasks', function(req, res) {
   connection.query(query, task, function(err, result) {
     if (err) throw err;
     console.log('Dodano zadanie:', task);
+    res.sendStatus(200);
+  });
+});
+
+// Zmiana statusu zadania
+app.post('/tasks/status', function(req, res) {
+  const { projectId, taskId, status } = req.body;
+  const query = 'UPDATE tasks SET status = ? WHERE project_id = ? AND id = ?';
+  console.log('Przekazane wartości:', projectId, taskId, status);
+  connection.query(query, [status, projectId, taskId], function(err, result) {
+    if (err) throw err;
+    console.log('Zmieniono status zadania:', taskId);
     res.sendStatus(200);
   });
 });

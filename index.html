@@ -7,40 +7,30 @@
 </head>
 
 <body>
-  <h1>Lista zadań</h1>
-  <div id="task-list"></div>
-
-  <h2>Wszyscy użytkownicy</h2>
-  <ul id="user-list"></ul>
-
-  <h2>Dodaj użytkownika</h2>
-  <form id="add-user-form" action="/users" method="POST">
-    <input type="text" name="name" placeholder="Imię" required>
-    <input type="text" name="last_name" placeholder="Nazwisko" required>
-    <button type="submit">Dodaj użytkownika</button>
-  </form>
-
-  <h2>Dodaj projekt</h2>
-  <form id="add-project-form" action="/projects" method="POST">
-    <input type="text" name="name" placeholder="Nazwa projektu" required>
-    <button type="submit">Dodaj projekt</button>
-  </form>
-
-  <h2>Dodaj zadanie</h2>
-  <form id="add-task-form" action="/tasks" method="POST">
-    <input type="text" name="name" placeholder="Nazwa zadania" required>
-    <input type="number" name="project_id" placeholder="ID projektu" required>
-    <input type="number" name="user_id" placeholder="ID użytkownika" required>
-    <button type="submit">Dodaj zadanie</button>
-  </form>
-
+  <div class="container">
+    <div class="tasks">
+      <h1>Lista zadań</h1>
+      <div id="task-list"></div>
+    </div>
+    <div class="status">
+      <div class="change-status">
+        <h2>Wybierz projekt</h2>
+        <select id="project-select"></select>
+      </div>
+      <div class="choose-task">
+        <h2>Zmiana statusu zadania</h2>
+        <p>Wybierz zadanie:</p>
+        <select id="task-select">Brak zadań</select>
+      </div>
+      <div class="button">
+        <button id="change-status-btn">Zmień status na "in_progress"</button>
+      </div>
+    </div>
+  </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function () {
-      // Pobranie listy projektów
-      $(document).ready(function () {
-        // Pobranie listy zadań i projektów po załadowaniu strony
-        $.get("/projects", function (projects) {
+      $.get("/projects", function (projects) {
           projects.forEach(function (project) {
             let projectItem = $("<li><strong>Projekt:</strong> " + project.name + " (ID: " + project.id + ")</li>");
             let tasksList = $("<ul></ul>");
@@ -48,7 +38,7 @@
             $.get("/tasks/" + project.id, function (tasks) {
               if (tasks.length > 0) {
                 tasks.forEach(function (task) {
-                  tasksList.append("<li>" + task.name + " (Użytkownik: " + task.user_name + ")</li>");
+                  tasksList.append("<li>" + task.name + " (Użytkownik: " + task.user_name + ")" + " Status zadania: " + task.status + "</li>");
                 });
               } else {
                 tasksList.append("<li>Brak zadań</li>");
@@ -58,64 +48,48 @@
               $("#task-list").append(projectItem);
             });
           });
-        });
         $.get("/users", function (users) {
           users.forEach(function (user) {
             let userItem = $("<li>" + user.name + " " + user.last_name + "</li>");
             $("#user-list").append(userItem);
           });
         });
-      })
-      $(document).ready(function () {
-        $.get("/showusers", function (showusers) {
-          let userhead = $("<h1>Użytkownicy wprowadzeni do bazy:</h1>")
-          let userlist = $("<ul></ul>")
-          showusers.forEach(function (showuser) {
-              userlist.append("<li>" + showuser.name + ", id:"+ showuser.id + "</li>")
-          })
-          $("#user-list").append(userlist)
-          
-        })
-      })
+        projects.forEach(function (project) {
+          let option = $("<option></option>").val(project.id).text(project.name);
+          $("#project-select").append(option);
+        });
+      });
+      $("#change-status-btn").click(function () {
+        const projectId = $("#project-select").val();
+
+        const taskId = $("#task-select").val();
+        const status = "in_progress"; 
 
 
+        $.post("/tasks/status", { projectId: projectId, taskId: taskId, status: status }, function (response) {
 
-      // Obsługa dodawania użytkownika
-      $('#add-user-form').submit(function (event) {
-        event.preventDefault();
-        const form = $(this);
-        const url = form.attr('action');
-        const formData = form.serialize();
-        $.post(url, formData, function (response) {
-          alert('Dodano użytkownika!');
-          form.trigger('reset');
-          location.reload()
+          alert("Status zadania został zmieniony na 'in_progress'");
+
         });
       });
 
-      // Obsługa dodawania projektu
-      $('#add-project-form').submit(function (event) {
-        event.preventDefault();
-        const form = $(this);
-        const url = form.attr('action');
-        const formData = form.serialize();
-        $.post(url, formData, function (response) {
-          alert('Dodano projekt!');
-          form.trigger('reset');
-          location.reload(); // Przeładuj stronę po dodaniu projektu
-        });
-      });
 
-      // Obsługa dodawania zadania
-      $('#add-task-form').submit(function (event) {
-        event.preventDefault();
-        const form = $(this);
-        const url = form.attr('action');
-        const formData = form.serialize();
-        $.post(url, formData, function (response) {
-          alert('Dodano zadanie!');
-          form.trigger('reset');
-          location.reload();
+      $("#project-select").change(function () {
+        const projectId = $(this).val();
+
+        $.get("/tasks/" + projectId, function (tasks) {
+
+          $("#task-select").empty();
+
+          if (tasks.length > 0) {
+            tasks.forEach(function (task) {
+              let option = $("<option></option>").val(task.id).text(task.name);
+              $("#task-select").append(option);
+            });
+          } else {
+            let option = $("<option disabled selected>Brak zadań</option>");
+            $("#task-select").append(option);
+          }
         });
       });
     });
