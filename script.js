@@ -110,6 +110,13 @@ app.post('/tasks/status', function(req, res) {
     res.sendStatus(200);
   });
 });
+app.post('/tasks/remove', function(req, res) {
+  const { projectId, taskId } = req.body;
+  const query = "DELETE FROM tasks WHERE project_id = ? AND id = ?";
+  connection.query(query, [projectId, taskId], function(err, result) {
+    res.sendStatus(200)
+  })
+})
 
 const port = 3000;
 app.listen(port, function() {

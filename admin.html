@@ -50,7 +50,50 @@
                     $.get("/tasks/" + project.id, function (tasks) {
                         if (tasks.length > 0) {
                             tasks.forEach(function (task) {
-                                tasksList.append("<li>" + task.name + " (Użytkownik: " + task.user_name + ")" + " Status zadania: " + task.status + "</li>");
+                                let li = $("<li class='tasks'></li>");
+                                const div = $("<div></div>")
+                                const remove = $("<button class='remove'></button>")
+                                const todo = $("<button></button>")
+                                const done = $("<button></button>")
+                                const progress = $("<button></button>")
+                                li.append(task.name + " (Użytkownik: " + task.user_name + ")" + " Status zadania: " + task.status);
+                                remove.append("RM")
+                                todo.append("TODO")
+                                done.append("DONE")
+                                progress.append("PROGRESS")
+                                remove.click(function (remove) {
+                                    $.post("/tasks/remove", { projectId: project.id, taskId: task.id}, function() {
+                                        alert("Usunięto zadanie!")
+                                        location.reload()
+                                    })
+                                })
+                                todo.click(function (status) {
+                                    $.post("/tasks/status", { projectId: project.id, taskId: task.id, status: "todo" }, function (response) {
+
+                                        alert("Status zadania został zmieniony na 'todo'");
+                                        location.reload()
+                                    });
+                                })
+                                done.click(function (status) {
+                                    $.post("/tasks/status", { projectId: project.id, taskId: task.id, status: "done" }, function (response) {
+
+                                        alert("Status zadania został zmieniony na 'done'");
+                                        location.reload()
+                                    });
+                                })
+                                progress.click(function (status) {
+                                    $.post("/tasks/status", { projectId: project.id, taskId: task.id, status: "in_progress" }, function (response) {
+
+                                        alert("Status zadania został zmieniony na 'in_progress'");
+                                        location.reload()
+                                    });
+                                })
+                                div.append(todo)
+                                div.append(done)
+                                div.append(progress)
+                                div.append(remove)
+                                li.append(div)
+                                tasksList.append(li);
                             });
                         } else {
                             tasksList.append("<li>Brak zadań</li>");
@@ -122,4 +165,5 @@
         });
     </script>
 </body>
+
 </html>
